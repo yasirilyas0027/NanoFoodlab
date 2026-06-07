@@ -1,18 +1,46 @@
 import streamlit as st
 
-st.title("NanoFood Learning Center")
+st.title("Learning Module")
+st.title("This is a title")
+st.title("_Streamlit_ is :blue[cool] :sunglasses:")
 
-st.write("""
-Food nanotechnology studies how nanoparticles improve food quality,
-shelf life, and safety.
+topic = st.selectbox(
+    "Choose topic",
+    ["Algorithm", "Python Basics", "Conditional", "Loop", "Data Structure", "Function"]
+)
+
+if topic == "Algorithm":
+    st.write("Algorithm is a step-by-step procedure to solve a problem.")
+
+elif topic == "Python Basics":
+    st.code("""
+x = 5
+y = 10
+print(x+y)
 """)
 
-st.image("https://upload.wikimedia.org/wikipedia/commons/9/9b/Nanotechnology.png")
+elif topic == "Conditional":
+    st.code("""
+if x > 5:
+    print("Big")
+else:
+    print("Small")
+""")
 
-st.header("Applications")
+elif topic == "Loop":
+    st.code("""
+for i in range(5):
+    print(i)
+""")
 
-st.write("""
-• Food preservation  
-• Nutrient delivery  
-• Antimicrobial packaging  
+elif topic == "Data Structure":
+    st.code("""
+numbers = [1,2,3,4]
+print(numbers[0])
+""")
+
+elif topic == "Function":
+    st.code("""
+def greet(name):
+    print("Hello", name)
 """)
