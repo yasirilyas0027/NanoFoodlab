@@ -226,7 +226,7 @@ Version 1.0.0
 </p>
 
 <p>
-Developed by <b>Putri Aprilia</b>, <b>Sifa Resti Nur Cahyanti</b>, and <b>Yasir Ilyas</b>
+Developed by <b>Putri Aprilia</b>, <b>Sifa Resti Nur Cahyanti</b>, and <b>Yasir Ilyas Trikurnianto</b>
 </p>
 
 <p>
