@@ -275,10 +275,32 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# =============================================================================
-# HERO SECTION
-# =============================================================================
 st.markdown("""
+<style>
+.hero-title {
+    font-size: clamp(36px, 5vw, 64px) !important;
+    font-weight: 800 !important;
+    color: #FFFFFF !important; /* Memaksa warna teks menjadi putih bersih */
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+    /* Memberikan bayangan gelap halus agar tulisan pop-out dan sangat terbaca */
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hero-subtitle {
+    font-size: clamp(18px, 2.5vw, 24px) !important;
+    color: #E2FBF0 !important; /* Memaksa warna hijau mint terang */
+    margin-bottom: 25px;
+    font-weight: 600 !important; /* Sedikit ditebalkan agar lebih tajam */
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-text {
+    color: #FFFFFF !important; /* Memaksa teks deskripsi tetap putih */
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+</style>
+
 <div class="hero">
     <div class="particle p1"></div>
     <div class="particle p2"></div>

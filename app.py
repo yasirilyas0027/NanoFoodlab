@@ -1,6 +1,8 @@
 import streamlit as st
 import os
 
+from streamlit.components.v1 import html
+
 # =============================================================================
 # SET PAGE CONFIG (Wajib berada di baris pertama sebelum render UI)
 # =============================================================================
@@ -9,26 +11,6 @@ st.set_page_config(
     page_icon="🔬",
     layout="wide"
 )
-
-# =============================================================================
-# INTEGRASI KEYBOARD INTERACTION ENGINE (Arrow Up & Arrow Down Navigation)
-# =============================================================================
-st.components.v1.html("""
-<script>
-    // Akses window utama dari dalam iframe Streamlit
-    const targetWindow = window.parent || window;
-    
-    targetWindow.addEventListener('keydown', function(e) {
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            targetWindow.scrollBy({ top: 180, behavior: 'smooth' });
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            targetWindow.scrollBy({ top: -180, behavior: 'smooth' });
-        }
-    });
-</script>
-""", height=0, width=0)
 
 # =============================================================================
 # CLEANED & SCOPED CUSTOM CSS (Gong & Premium UI Framework)
@@ -272,25 +254,64 @@ st.markdown("""
 .footer-credits span { color: #38BDF8; }
 .footer-dept { font-size: 13px; color: #94A3B8; margin-top: 6px; font-weight: 500; font-style: italic; }
 </style>
+            
+<script>
+    // Kode ini dieksekusi langsung di level Window Utama (Bukan dalam Iframe Sandbox)
+    (function() {
+        const doc = window.document;
+        
+        function scrollStreamlit(direction) {
+            // Target langsung container utama Streamlit tempat scrollbar aktif berada
+            const mainContainer = doc.querySelector('[data-testid="stAppViewContainer"]');
+            if (mainContainer) {
+                const step = 250; // Jarak scroll dalam piksel
+                const current = mainContainer.scrollTop;
+                mainContainer.scrollTo({
+                    top: direction === 'down' ? current + step : current - step,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Daftarkan listener global secara aman jika belum terdaftar
+        if (!window.__arrow_nav_hooked__) {
+            window.__arrow_nav_hooked__ = true;
+            
+            doc.addEventListener('keydown', function(e) {
+                // Jangan scroll jika pengguna sedang mengetik sesuatu di form input/teks
+                if (doc.activeElement.tagName === 'INPUT' || doc.activeElement.tagName === 'TEXTAREA') {
+                    return;
+                }
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    scrollStreamlit('down');
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    scrollStreamlit('up');
+                }
+            });
+        }
+    })();
+</script>
+            
 """, unsafe_allow_html=True)
 
 # =============================================================================
 # MULTI-LANGUAGE DICTIONARY CONFIGURATION (100% ENG & 100% INDO)
 # =============================================================================
-# Menempatkan widget selektor bahasa di area kontrol atas halaman
 language = st.radio(
     "🌐 Language / Bahasa",
     ["English", "Indonesia"],
     horizontal=True
 )
 
-# Definisi seluruh strings data tekstual aplikasi
 lang_dict = {
     "English": {
         "hero_title": "🔬 NANOFOOD INTELLIGENCE LAB",
         "hero_sub": "Interactive Platform for Advanced Food Nanotechnology",
         "hero_desc": "Integrating high-precision laboratory calculators, cutting-edge material characterization modules, functional packaging analysis, and artificial intelligence for lab troubleshooting into a single unified digital ecosystem.",
-        "announcement": "💡 **System Announcement:** Welcome! This platform is specifically designed to accommodate the acceleration of Experimental Research, Data-Driven Education, and Laboratory Applications in Food Technology. Use the $\\uparrow$ / $\\downarrow$ keys on your keyboard for precise page scrolling.",
+        "announcement": "💡 **System Announcement:** Welcome! This platform is specifically designed to accommodate the acceleration of Experimental Research, Data-Driven Education, and Laboratory Applications in Food Technology. Use the **↑** / **↓** keys on your keyboard for precise page scrolling.",
         "metric_1_lbl": "Advanced Calculators",
         "metric_1_hlp": "Calculation of Molarities, Dilutions, IC50/EC50, Encapsulation Efficiency, etc.",
         "metric_2_lbl": "Learning Modules",
@@ -343,7 +364,7 @@ lang_dict = {
         "hero_title": "🔬 NANOFOOD INTELLIGENCE LAB",
         "hero_sub": "Platform Interaktif untuk Nanoteknologi Pangan Mutakhir",
         "hero_desc": "Mengintegrasikan kalkulator laboratorium presisi tinggi, modul karakterisasi material mutakhir, analisis pengemasan fungsional, dan kecerdasan artifisial penanganan masalah laborat dalam satu platform ekosistem digital terpadu.",
-        "announcement": "💡 **Pengumuman Sistem:** Selamat datang! Platform ini dirancang khusus untuk mengakomodasi akselerasi Riset Eksperimental, Edukasi Berbasis Data, dan Aplikasi Laboratorium di bidang Teknologi Pangan. Gunakan tombol $\\uparrow$ / $\\downarrow$ pada keyboard untuk scrolling halaman secara presisi.",
+        "announcement": "💡 **Pengumuman Sistem:** Selamat datang! Platform ini dirancang khusus untuk mengakomodasi akselerasi Riset Eksperimental, Edukasi Berbasis Data, dan Aplikasi Laboratorium di bidang Teknologi Pangan. Gunakan tombol **↑** / **↓** pada keyboard untuk scrolling halaman secara presisi.",
         "metric_1_lbl": "Kalkulator Canggih",
         "metric_1_hlp": "Kalkulasi Molaritas, Dilusi, IC50/EC50, Efisiensi Enkapsulasi, dll.",
         "metric_2_lbl": "Modul Pembelajaran",
@@ -394,17 +415,12 @@ lang_dict = {
     }
 }
 
-# Menyimpan kamus aktif berdasarkan pilihan pengguna
 txt = lang_dict[language]
 
 # =============================================================================
 # HELPER FUNCTION FOR SAFE PAGE LINKING & DYNAMIC ROUTING
 # =============================================================================
 def safe_page_link(page_path, label, icon="🔗", key_suffix="default", fallback_path=None, fallback_label=None):
-    """
-    Merender st.page_link secara aman tanpa merusak aplikasi.
-    Jika target tidak ada, otomatis mengalihkan navigasi ke modul induk yang sesuai.
-    """
     try:
         if os.path.exists(page_path) or os.path.exists(f"pages/{page_path}"):
             st.page_link(page_path, label=label, icon=icon, key=f"lnk_{page_path}_{key_suffix}")
@@ -424,7 +440,7 @@ def safe_page_link(page_path, label, icon="🔗", key_suffix="default", fallback
             st.warning(txt['pop_wait'])
 
 # =============================================================================
-# HERO SECTION (Gong Pembuka Animasi)
+# HERO SECTION
 # =============================================================================
 st.markdown(f"""
 <div class="hero">
@@ -502,7 +518,6 @@ with c3:
 # =============================================================================
 st.markdown(f'<h2 class="section-title">{txt["sec_2_title"]}</h2>', unsafe_allow_html=True)
 
-# Alur Kerja Internasional tetap menggunakan terminologi universal publikasi ilmiah
 st.markdown("""
 <div class="workflow-container">
     <div class="workflow-flex">
@@ -670,7 +685,7 @@ with qa6:
     safe_page_link("pages/visualization.py", label="Open Model", icon="🎨", key_suffix="qa_visual")
 
 # =============================================================================
-# PLATFORM SYSTEM CLOSING FOOTER (CREDIT DEVELOPER UPDATE + DYNAMIC LANGUAGE)
+# PLATFORM SYSTEM CLOSING FOOTER
 # =============================================================================
 st.markdown(f"""
 <div class="footer-container">
@@ -692,24 +707,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# =============================================================================
-# KEYBOARD NAVIGATION SYSTEM (ARROW UP / ARROW DOWN KEY LISTENER)
-# =============================================================================
-components.html(
-    """
-    <script>
-    const doc = window.parent.document;
-    doc.addEventListener('keydown', function(e) {
-        if (e.key === 'ArrowDown') {
-            window.parent.scrollBy({ top: 250, behavior: 'smooth' });
-        }
-        if (e.key === 'ArrowUp') {
-            window.parent.scrollBy({ top: -250, behavior: 'smooth' });
-        }
-    });
-    </script>
-    """,
-    height=0,
-    width=0
-)
+
+
 
