@@ -306,7 +306,8 @@ with left:
     st.image(
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS58r2f65MzujgF-cHQFcWrRP2FHJzBfseDqrvzoy8-985OY-urOcBZMvs&s=10",
         use_container_width=True,
-        caption="Illustration of Nanotechnology (klik gambar untuk memperbesar)"
+        caption="Illustration of Nanotechnology"
+        "(klik gambar untuk memperbesar)"
     )
 
 with right:
@@ -1422,3 +1423,4 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
+

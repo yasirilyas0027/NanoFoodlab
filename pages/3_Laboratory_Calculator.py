@@ -3,7 +3,6 @@ import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.stats import linregress
 
 st.set_page_config(
     page_title="Laboratory Calculator",
@@ -1107,3 +1106,4 @@ if st.session_state.calculator=="standard_curve":
                 st.pyplot(fig)
         except:
             st.error("Invalid numerical data.")
+

@@ -139,46 +139,72 @@ uvvis_data = [
 df_uvvis = pd.DataFrame(uvvis_data)
 
 # ==========================================
-# 3. SIDEBAR MULTI-MODULE NAVIGATION
+# 3. SIDEBAR MULTI-MODULE NAVIGATION & LANG
 # ==========================================
 with st.sidebar:
     st.image("https://img.icons8.com/external-flatart-icons-flat-flatarticons/128/external-nanotechnology-biotechnology-flatart-icons-flat-flatarticons.png", width=70)
-    st.title("Lab Navigation Panel")
-    st.markdown("Pilih modul analisis database dibawah ini:")
+    
+    # SYSTEM DUAL-LANGUAGE SWITCHER INTERACTIVE
+    language = st.radio(
+        "🌐 Language / Bahasa",
+        ["English", "Indonesia"],
+        horizontal=True
+    )
+    
+    st.title("Lab Navigation Panel" if language == "English" else "Panel Navigasi Lab")
+    st.markdown("Select analysis module below:" if language == "English" else "Pilih modul analisis database dibawah ini:")
+    
+    menu_options = [
+        "DLS Inventory & Property Analytics", 
+        "UV-Vis Nanoparticle Database", 
+        "FTIR Functional Group Analyzer"
+    ]
     menu = st.radio(
-        "Modul Analisis:", 
-        ["DLS Inventory & Property Analytics", "UV-Vis Nanoparticle Database", "FTIR Functional Group Analyzer"]
+        "Analysis Module:" if language == "English" else "Modul Analisis:", 
+        menu_options
     )
     st.sidebar.divider()
-    st.sidebar.caption("💡 **Tip:** Gunakan navigasi ini untuk mengolah data instrumen spesifik secara langsung.")
+    st.sidebar.caption(
+        "💡 **Tip:** Use this navigation to process specific instrument data directly." 
+        if language == "English" else 
+        "💡 **Tip:** Gunakan navigasi ini untuk mengolah data instrumen spesifik secara langsung."
+    )
 
 # ==========================================
 # MODULE 1: DLS INVENTORY & ANALYTICS
 # ==========================================
 if menu == "DLS Inventory & Property Analytics":
-    st.markdown('<div class="main-header">🧬 DLS Nanomaterial Inventory & Analytics</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-text">Sistem Basis Data Canggih Eksplorasi Ukuran dan Polidispersitas Koloid</div>', unsafe_allow_html=True)
+    if language == "English":
+        st.markdown('<div class="main-header">🧬 DLS Nanomaterial Inventory & Analytics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sub-text">Advanced Database System for Colloidal Size and Polydispersity Exploration</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="main-header">🧬 DLS Nanomaterial Inventory & Analytics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sub-text">Sistem Basis Data Canggih Eksplorasi Ukuran dan Polidispersitas Koloid</div>', unsafe_allow_html=True)
     
     df_nano = get_dls_data()
 
-    # Dashboard Metrics
+    # Dashboard Metrics translation logic
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Total Material", len(df_nano))
-    m2.metric("Avg. Size", f"{df_nano['Size (nm)'].mean():.1f} nm")
-    m3.metric("Min. Size", f"{df_nano['Size (nm)'].min():.1f} nm")
-    m4.metric("Avg. PDI", f"{df_nano['PDI'].mean():.3f}")
+    m1.metric("Total Material" if language == "English" else "Total Material", len(df_nano))
+    m2.metric("Avg. Size" if language == "English" else "Rata-rata Ukuran", f"{df_nano['Size (nm)'].mean():.1f} nm")
+    m3.metric("Min. Size" if language == "English" else "Ukuran Min.", f"{df_nano['Size (nm)'].min():.1f} nm")
+    m4.metric("Avg. PDI" if language == "English" else "Rata-rata PDI", f"{df_nano['PDI'].mean():.3f}")
 
     st.divider()
 
     # Filter Interaktif
-    with st.expander("🔍 Filter & Search Engine Panel", expanded=True):
+    expander_title = "🔍 Filter & Search Engine Panel" if language == "English" else "🔍 Panel Filter & Mesin Pencari"
+    with st.expander(expander_title, expanded=True):
         f_col1, f_col2, f_col3 = st.columns(3)
         with f_col1:
-            search = st.text_input("Cari Nama Material", "")
+            search_lbl = "Search Material Name" if language == "English" else "Cari Nama Material"
+            search = st.text_input(search_lbl, "")
         with f_col2:
-            metode = st.multiselect("Pilih Metode Sintesis", df_nano["Metode Sintesis"].unique())
+            method_lbl = "Select Synthesis Method" if language == "English" else "Pilih Metode Sintesis"
+            metode = st.multiselect(method_lbl, df_nano["Metode Sintesis"].unique())
         with f_col3:
-            size_range = st.slider("Rentang Ukuran (nm)", 0.0, 600.0, (0.0, 600.0))
+            range_lbl = "Size Range (nm)" if language == "English" else "Rentang Ukuran (nm)"
+            size_range = st.slider(range_lbl, 0.0, 600.0, (0.0, 600.0))
 
     # Filter Logic
     filtered_df = df_nano.copy()
@@ -189,43 +215,58 @@ if menu == "DLS Inventory & Property Analytics":
     filtered_df = filtered_df[(filtered_df["Size (nm)"] >= size_range[0]) & (filtered_df["Size (nm)"] <= size_range[1])]
 
     # Visualisasi & Tabel Master
-    tab1, tab2, tab3 = st.tabs(["📊 Distribution Plot", "📈 Property Correlation", "📋 Master Database"])
+    tab_titles = ["📊 Distribution Plot", "📈 Property Correlation", "📋 Master Database"] if language == "English" else ["📊 Plot Distribusi", "📈 Korelasi Properti", "📋 Basis Data Master"]
+    tab1, tab2, tab3 = st.tabs(tab_titles)
 
     with tab1:
-        st.subheader("Distribusi Ukuran Nanopartikel")
+        st.subheader("Nanoparticle Size Distribution" if language == "English" else "Distribusi Ukuran Nanopartikel")
         if not filtered_df.empty:
+            title_graph = "Size Frequency Visualization" if language == "English" else "Visualisasi Frekuensi Ukuran"
             fig_hist = px.histogram(filtered_df, x="Size (nm)", color="Metode Sintesis", 
                                    marginal="rug", hover_data=filtered_df.columns,
-                                   title="Visualisasi Frekuensi Ukuran",
+                                   title=title_graph,
                                    color_discrete_sequence=px.colors.qualitative.Bold)
             st.plotly_chart(fig_hist, use_container_width=True)
         else:
-            st.info("Data tidak ditemukan untuk visualisasi grafik.")
+            st.info("No data found for graph visualization." if language == "English" else "Data tidak ditemukan untuk visualisasi grafik.")
 
     with tab2:
-        st.subheader("Korelasi Ukuran vs Polidispersitas (PDI)")
+        st.subheader("Correlation: Size vs Polydispersity (PDI)" if language == "English" else "Korelasi Ukuran vs Polidispersitas (PDI)")
         if not filtered_df.empty:
+            title_scatter = "Dispersion Quality Mapping" if language == "English" else "Mapping Kualitas Dispersi"
             fig_scatter = px.scatter(filtered_df, x="Size (nm)", y="PDI", 
                                     size="Size (nm)", color="Metode Sintesis",
                                     hover_name="Material", log_x=True,
-                                    title="Mapping Kualitas Dispersi")
+                                    title=title_scatter)
             st.plotly_chart(fig_scatter, use_container_width=True)
         else:
-            st.info("Data tidak ditemukan untuk visualisasi grafik.")
+            st.info("No data found for graph visualization." if language == "English" else "Data tidak ditemukan untuk visualisasi grafik.")
 
     with tab3:
-        st.subheader("Data Registri Nanomaterial")
-        st.dataframe(filtered_df, use_container_width=True, hide_index=True,
+        st.subheader("Nanomaterial Registry Data" if language == "English" else "Data Registri Nanomaterial")
+        # Menyesuaikan nama kolom tabel agar dinamis mengikuti bahasa
+        if language == "English":
+            display_df = filtered_df.rename(columns={"Metode Sintesis": "Synthesis Method", "Kondisi": "Condition", "Referensi": "Reference"})
+            ref_col_key = "Reference"
+        else:
+            display_df = filtered_df
+            ref_col_key = "Referensi"
+            
+        st.dataframe(display_df, use_container_width=True, hide_index=True,
                      column_config={
                          "Size (nm)": st.column_config.NumberColumn(format="%.2f nm"),
                          "PDI": st.column_config.NumberColumn(format="%.3f"),
-                         "Referensi": st.column_config.LinkColumn()
+                         ref_col_key: st.column_config.LinkColumn()
                      })
 
     # Stability Calculator
     st.divider()
     st.subheader("🧪 Predictive Lab Tool: Stability Estimator")
-    st.info("Gunakan simulator ini untuk memprediksi kestabilan dispersi berdasarkan input DLS Anda.")
+    st.info(
+        "Use this simulator to predict dispersion stability based on your DLS inputs."
+        if language == "English" else
+        "Gunakan simulator ini untuk memprediksi kestabilan dispersi berdasarkan input DLS Anda."
+    )
 
     c1, c2 = st.columns([1, 2])
     with c1:
@@ -233,27 +274,41 @@ if menu == "DLS Inventory & Property Analytics":
         u_pdi = st.number_input("Input PDI", 0.0, 1.0, 0.2)
         
     with c2:
-        if u_pdi < 0.1: stability = "Sangat Monodispers (Sangat Stabil)"; color = "green"
-        elif u_pdi < 0.3: stability = "Moderat (Stabil)"; color = "blue"
-        else: stability = "Polidispers (Cenderung Agregasi)"; color = "orange"
+        if u_pdi < 0.1: 
+            stability = "Highly Monodisperse (Highly Stable)" if language == "English" else "Sangat Monodispers (Sangat Stabil)"
+            color = "green"
+        elif u_pdi < 0.3: 
+            stability = "Moderate (Stable)" if language == "English" else "Moderat (Stabil)"
+            color = "blue"
+        else: 
+            stability = "Polydisperse (Prone to Aggregation)" if language == "English" else "Polidispers (Cenderung Agregasi)"
+            color = "orange"
         
         st.markdown(f"### Status: <span style='color:{color}'>{stability}</span>", unsafe_allow_html=True)
         st.progress(u_pdi)
-        st.write(f"Partikel berukuran **{u_size} nm** dengan PDI **{u_pdi}** menunjukkan karakteristik sistem koloid yang **{stability.lower()}**.")
+        
+        if language == "English":
+            st.write(f"Particles sized **{u_size} nm** with a PDI of **{u_pdi}** indicate characteristics of a **{stability.lower()}** colloidal system.")
+        else:
+            st.write(f"Partikel berukuran **{u_size} nm** dengan PDI **{u_pdi}** menunjukkan karakteristik sistem koloid yang **{stability.lower()}**.")
 
 # ==========================================
 # MODULE 2: UV-VIS NANOPARTICLE DATABASE
 # ==========================================
 elif menu == "UV-Vis Nanoparticle Database":
     st.markdown('<div class="main-header">🔬 UV-Vis Nanoparticle Database</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-text">Comprehensive Literature Database for UV-Visible Spectrophotometric Characterization</div>', unsafe_allow_html=True)
+    if language == "English":
+        st.markdown('<div class="sub-text">Comprehensive Literature Database for UV-Visible Spectrophotometric Characterization</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="sub-text">Database Literatur Komprehensif untuk Karakterisasi Spektrofotometri UV-Visible</div>', unsafe_allow_html=True)
 
     # Filter Sidebar Tambahan khusus UV-Vis
     st.sidebar.markdown("---")
-    st.sidebar.header("⚙ UV-Vis Filters")
+    st.sidebar.header("⚙ UV-Vis Filters" if language == "English" else "⚙ Filter UV-Vis")
     uv_material = st.sidebar.multiselect("Material", df_uvvis["Material"].unique(), default=df_uvvis["Material"].unique())
-    uv_category = st.sidebar.multiselect("Category", df_uvvis["Category"].unique(), default=df_uvvis["Category"].unique())
-    uv_year = st.sidebar.slider("Publication Year", int(df_uvvis["Year"].min()), int(df_uvvis["Year"].max()), (int(df_uvvis["Year"].min()), int(df_uvvis["Year"].max())))
+    uv_category = st.sidebar.multiselect("Category" if language == "English" else "Kategori", df_uvvis["Category"].unique(), default=df_uvvis["Category"].unique())
+    year_lbl = "Publication Year" if language == "English" else "Tahun Publikasi"
+    uv_year = st.sidebar.slider(year_lbl, int(df_uvvis["Year"].min()), int(df_uvvis["Year"].max()), (int(df_uvvis["Year"].min()), int(df_uvvis["Year"].max())))
 
     # Apply Filters
     df_uv_filtered = df_uvvis[
@@ -263,50 +318,59 @@ elif menu == "UV-Vis Nanoparticle Database":
     ]
 
     # Statistics Row
-    st.subheader("📊 Database Statistics")
+    st.subheader("📊 Database Statistics" if language == "English" else "📊 Statistik Basis Data")
     uc1, uc2, uc3, uc4 = st.columns(4)
-    uc1.metric("Literatures", len(df_uv_filtered))
-    uc2.metric("Materials", df_uv_filtered["Material"].nunique())
-    uc3.metric("Average λmax", f"{df_uv_filtered['Lambda_max'].mean():.1f} nm" if not df_uv_filtered.empty else "N/A")
-    uc4.metric("Latest Publication", df_uv_filtered["Year"].max() if not df_uv_filtered.empty else "N/A")
+    uc1.metric("Literatures" if language == "English" else "Literatur", len(df_uv_filtered))
+    uc2.metric("Materials" if language == "English" else "Material", df_uv_filtered["Material"].nunique())
+    uc3.metric("Average λmax" if language == "English" else "Rata-rata λmax", f"{df_uv_filtered['Lambda_max'].mean():.1f} nm" if not df_uv_filtered.empty else "N/A")
+    uc4.metric("Latest Publication" if language == "English" else "Publikasi Terbaru", df_uv_filtered["Year"].max() if not df_uv_filtered.empty else "N/A")
 
     st.divider()
 
     # UV-Vis Real-time Interpretation Tool
-    st.subheader("🧠 UV-Vis Peak Real-time Interpreter")
+    st.subheader("🧠 UV-Vis Peak Real-time Interpreter" if language == "English" else "🧠 Interpreter Real-time Puncak UV-Vis")
     peak_input_uv = st.number_input("Input λmax (nm)", min_value=200, max_value=1000, value=420)
     
     if peak_input_uv < 380:
-        st.success("**Possible Interpretation:**\n\n• Metal Oxide Nanoparticle (ZnO, TiO₂, MgO)\n\n*Associated with:* Band Gap Absorption / Excitonic Transition")
+        if language == "English":
+            st.success("**Possible Interpretation:**\n\n• Metal Oxide Nanoparticle (ZnO, TiO₂, MgO)\n\n*Associated with:* Band Gap Absorption / Excitonic Transition")
+        else:
+            st.success("**Interpretasi yang Memungkinkan:**\n\n• Nanopartikel Oksida Logam (ZnO, TiO₂, MgO)\n\n*Asosiasi Karakter:* Absorpsi Band Gap / Transisi Eksitonik")
     elif 380 <= peak_input_uv <= 550:
-        st.success("**Possible Interpretation:**\n\n• Silver Nanoparticle (AgNP) atau Gold Nanoparticle (Small size)\n\n*Associated with:* Localized Surface Plasmon Resonance (LSPR)")
+        if language == "English":
+            st.success("**Possible Interpretation:**\n\n• Silver Nanoparticle (AgNP) or Gold Nanoparticle (Small size)\n\n*Associated with:* Localized Surface Plasmon Resonance (LSPR)")
+        else:
+            st.success("**Interpretasi yang Memungkinkan:**\n\n• Nanopartikel Perak (AgNP) atau Nanopartikel Emas Ukuran Kecil (AuNP)\n\n*Asosiasi Karakter:* Resonansi Plasmon Permukaan Terlokalisasi (LSPR)")
     else:
-        st.success("**Possible Interpretation:**\n\n• Quantum Dots / Larger AuNP / Core-Shell Nanoparticles\n\n*Associated with:* Red-shifted SPR / Quantum Confinement Effects")
+        if language == "English":
+            st.success("**Possible Interpretation:**\n\n• Quantum Dots / Larger AuNP / Core-Shell Nanoparticles\n\n*Associated with:* Red-shifted SPR / Quantum Confinement Effects")
+        else:
+            st.success("**Interpretasi yang Memungkinkan:**\n\n• Quantum Dots / AuNP Ukuran Besar / Nanopartikel Core-Shell\n\n*Asosiasi Karakter:* Efek Pergeseran Merah (Red-shifted) SPR / Efek Batasan Kuantum")
 
     st.divider()
 
     # Multiplots Grid
     g_col1, g_col2 = st.columns(2)
     with g_col1:
-        st.subheader("📈 Particle Size vs λmax Mapping")
+        st.subheader("📈 Particle Size vs λmax Mapping" if language == "English" else "📈 Pemetaan Ukuran Partikel vs λmax")
         if not df_uv_filtered.empty:
             fig_scat_uv = px.scatter(df_uv_filtered, x="Particle_Size_nm", y="Lambda_max", color="Category", size_max=15, hover_name="Material")
             fig_scat_uv.update_layout(height=350)
             st.plotly_chart(fig_scat_uv, use_container_width=True)
         else:
-            st.info("No data available for plotting.")
+            st.info("No data available for plotting." if language == "English" else "Tidak ada data yang tersedia untuk grafik.")
 
     with g_col2:
-        st.subheader("🥧 Material Composition Share")
+        st.subheader("🥧 Material Composition Share" if language == "English" else "🥧 Proporsi Komposisi Material")
         if not df_uv_filtered.empty:
             fig_pie_uv = px.pie(df_uv_filtered, names="Material", color_discrete_sequence=px.colors.sequential.RdBu)
             fig_pie_uv.update_layout(height=350)
             st.plotly_chart(fig_pie_uv, use_container_width=True)
         else:
-            st.info("No data available for plotting.")
+            st.info("No data available for plotting." if language == "English" else "Tidak ada data yang tersedia untuk grafik.")
 
     # Spectra Region Multi-band Map
-    st.subheader("🌈 Interactive UV-Vis Spectral Region Grid")
+    st.subheader("🌈 Interactive UV-Vis Spectral Region Grid" if language == "English" else "🌈 Kisi Wilayah Spektral UV-Vis Interaktif")
     fig_region = go.Figure()
     fig_region.add_vrect(x0=200, x1=400, fillcolor="rgba(142, 68, 173, 0.1)", line_width=0, annotation_text="UV Region", annotation_position="top left")
     fig_region.add_vrect(x0=400, x1=700, fillcolor="rgba(39, 174, 96, 0.1)", line_width=0, annotation_text="Visible Region", annotation_position="top left")
@@ -321,11 +385,11 @@ elif menu == "UV-Vis Nanoparticle Database":
     st.plotly_chart(fig_region, use_container_width=True)
 
     # Master Datatables & Expandable Details
-    st.subheader("📚 UV-Vis Records Reference Register")
+    st.subheader("📚 UV-Vis Records Reference Register" if language == "English" else "📚 Registri Referensi Data UV-Vis")
     st.dataframe(df_uv_filtered, use_container_width=True, hide_index=True)
 
     # Expander Literature Details
-    st.subheader("📖 Literature Deep Analysis")
+    st.subheader("📖 Literature Deep Analysis" if language == "English" else "📖 Analisis Mendalam Literatur")
     for _, row in df_uv_filtered.iterrows():
         with st.expander(f"📑 Details: {row['Material']} | {row['Reference']} ({row['Year']})"):
             dl1, dl2 = st.columns(2)
@@ -341,36 +405,54 @@ elif menu == "UV-Vis Nanoparticle Database":
 
     # Download Button
     csv_uv = df_uv_filtered.to_csv(index=False)
-    st.download_button("⬇ Download Filtered UV-Vis CSV Database", csv_uv, "UVVIS_DATABASE.csv", "text/csv")
+    btn_lbl = "⬇ Download Filtered UV-Vis CSV Database" if language == "English" else "⬇ Unduh Database CSV UV-Vis Terfilter"
+    st.download_button(btn_lbl, csv_uv, "UVVIS_DATABASE.csv", "text/csv")
 
     # Library Section
-    st.subheader("📚 UV-Vis Spectrometry Reference Theory Library")
-    topic_uv = st.selectbox("Select Spectrum Target Topic", ["SPR", "Band Gap", "Quantum Dot"])
+    st.subheader("📚 UV-Vis Spectrometry Reference Theory Library" if language == "English" else "📚 Perpustakaan Teori Referensi Spektrometri UV-Vis")
+    topic_lbl = "Select Spectrum Target Topic" if language == "English" else "Pilih Topik Target Spektrum"
+    topic_uv = st.selectbox(topic_lbl, ["SPR", "Band Gap", "Quantum Dot"])
     if topic_uv == "SPR":
-        st.info("**Localized Surface Plasmon Resonance (LSPR):** Terjadi akibat osilasi kolektif elektron konduksi yang beresonansi dengan gelombang cahaya insiden. Karakteristik khas: AgNP (400–450 nm) & AuNP (520–560 nm).")
+        if language == "English":
+            st.info("**Localized Surface Plasmon Resonance (LSPR):** Occurs due to the collective oscillation of conduction electrons in resonance with incident light waves. Typical characteristics: AgNPs (400–450 nm) & AuNPs (520–560 nm).")
+        else:
+            st.info("**Localized Surface Plasmon Resonance (LSPR):** Terjadi akibat osilasi kolektif elektron konduksi yang beresonansi dengan gelombang cahaya insiden. Karakteristik khas: AgNP (400–450 nm) & AuNP (520–560 nm).")
     elif topic_uv == "Band Gap":
-        st.info("**Band Gap Absorption:** Terjadi perpindahan elektron dari pita valensi ke pita konduksi pada material semikonduktor oksida logam. Karakteristik khas: ZnO (320–380 nm) & TiO₂ (300–380 nm).")
+        if language == "English":
+            st.info("**Band Gap Absorption:** Electron transition from the valence band to the conduction band in metal oxide semiconductor materials. Typical characteristics: ZnO (320–380 nm) & TiO₂ (300–380 nm).")
+        else:
+            st.info("**Band Gap Absorption:** Terjadi perpindahan elektron dari pita valensi ke pita konduksi pada material semikonduktor oksida logam. Karakteristik khas: ZnO (320–380 nm) & TiO₂ (300–380 nm).")
     elif topic_uv == "Quantum Dot":
-        st.info("**Quantum Confinement Effect:** Pergeseran optik akibat manipulasi ukuran nanometer. Semakin kecil ukuran partikel semikonduktor, rentang band gap semakin melebar sehingga spektrum menyerap ke arah panjang gelombang lebih pendek (*Blue Shift*).")
+        if language == "English":
+            st.info("**Quantum Confinement Effect:** Optical shift due to nanometer-scale manipulation. The smaller the semiconductor particle size, the wider the band gap, causing the absorption spectrum to shift toward shorter wavelengths (*Blue Shift*).")
+        else:
+            st.info("**Quantum Confinement Effect:** Pergeseran optik akibat manipulasi ukuran nanometer. Semakin kecil ukuran partikel semikonduktor, rentang band gap semakin melebar sehingga spektrum menyerap ke arah panjang gelombang lebih pendek (*Blue Shift*).")
 
 # ==========================================
 # MODULE 3: FTIR FUNCTIONAL GROUP ANALYZER
 # ==========================================
 else:
     st.markdown('<div class="main-header">🔬 FTIR Functional Group Analyzer</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-text">Automated FTIR Peak Analysis, Identification of Chemical Fingerprints & Matrix Prediction</div>', unsafe_allow_html=True)
+    if language == "English":
+        st.markdown('<div class="sub-text">Automated FTIR Peak Analysis, Identification of Chemical Fingerprints & Matrix Prediction</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="sub-text">Analisis Puncak FTIR Otomatis, Identifikasi Sidik Jari Kimia & Prediksi Matriks</div>', unsafe_allow_html=True)
 
     col_input, col_view = st.columns([1, 2])
 
     with col_input:
-        st.subheader("FTIR Peak Input")
-        peak_input = st.text_input("Enter FTIR Peaks (cm⁻¹) separated by comma", "3400,2920,1730,1630,1050")
+        st.subheader("FTIR Peak Input" if language == "English" else "Input Puncak FTIR")
+        input_lbl = "Enter FTIR Peaks (cm⁻¹) separated by comma" if language == "English" else "Masukkan Puncak FTIR (cm⁻¹) dipisahkan tanda koma"
+        peak_input = st.text_input(input_lbl, "3400,2920,1730,1630,1050")
         
     # Processing Peaks String Input safely
     try:
         peaks = [float(x.strip()) for x in peak_input.split(",") if x.strip() != ""]
     except ValueError:
-        st.error("Format input salah. Mohon hanya masukkan angka dan dipisahkan tanda koma.")
+        if language == "English":
+            st.error("Invalid input format. Please only enter numbers separated by commas.")
+        else:
+            st.error("Format input salah. Mohon hanya masukkan angka dan dipisahkan tanda koma.")
         peaks = [3400, 2920, 1730, 1630, 1050]
 
     functional_groups = []
@@ -382,65 +464,78 @@ else:
     df_ftir_result = pd.DataFrame(functional_groups, columns=["Peak (cm⁻¹)", "Vibration", "Functional Group"])
 
     with col_view:
-        st.subheader("🧬 Spectrum Complexity Status")
+        st.subheader("🧬 Spectrum Complexity Status" if language == "English" else "🧬 Status Kompleksitas Spektrum")
         if len(peaks) < 5:
-            st.success(f"✔ {len(peaks)} Peaks Detected → Likely Simple Compound Structure")
+            if language == "English":
+                st.success(f"✔ {len(peaks)} Peaks Detected → Likely Simple Compound Structure")
+            else:
+                st.success(f"✔ {len(peaks)} Puncak Terdeteksi → Struktur Senyawa Cenderung Sederhana")
         else:
-            st.warning(f"⚠ {len(peaks)} Peaks Detected → Complex Matrix Molecule Dynamic")
+            if language == "English":
+                st.warning(f"⚠ {len(peaks)} Peaks Detected → Complex Matrix Molecule Dynamic")
+            else:
+                st.warning(f"⚠ {len(peaks)} Puncak Terdeteksi → Dinamika Molekul Matriks Kompleks")
 
     st.divider()
 
     # Results Table Identification
-    st.subheader("📊 Functional Group Identification Results")
+    st.subheader("📊 Functional Group Identification Results" if language == "English" else "📊 Hasil Identifikasi Gugus Fungsional")
     if not df_ftir_result.empty:
-        st.dataframe(df_ftir_result, use_container_width=True, hide_index=True)
+        if language == "English":
+            st.dataframe(df_ftir_result.rename(columns={"Vibration":"Vibration Type","Functional Group":"Chemical Group/Class"}), use_container_width=True, hide_index=True)
+        else:
+            st.dataframe(df_ftir_result, use_container_width=True, hide_index=True)
         groups = df_ftir_result["Functional Group"].tolist()
     else:
-        st.info("No organic functional groups matched the input peaks in current database.")
+        st.info("No organic functional groups matched the input peaks in current database." if language == "English" else "Tidak ada gugus fungsional organik yang cocok dengan input puncak dalam database saat ini.")
         groups = []
 
     # Interpretasi Terpadu & Prediksi Material
     int_col, mat_col = st.columns(2)
 
     with int_col:
-        st.subheader("🧠 Chemical Fingerprint Interpretation")
+        st.subheader("🧠 Chemical Fingerprint Interpretation" if language == "English" else "🧠 Interpretasi Sidik Jari Kimia")
         interpretation = []
-        if "Alcohol / Phenol" in groups: interpretation.append("Hydroxyl structural bands detected (-OH stretching).")
-        if any(g in groups for g in ["Carbonyl", "Ester C=O", "Carboxylic Acid"]): interpretation.append("Carbonyl compounds detected (C=O validation).")
-        if "Amide" in groups: interpretation.append("Protein backbone structure / aliphatic amide detected.")
-        if "Aromatic" in groups: interpretation.append("Aromatic core ring system compound present.")
+        if "Alcohol / Phenol" in groups: 
+            interpretation.append("Hydroxyl structural bands detected (-OH stretching)." if language == "English" else "Pita struktural hidroksil terdeteksi (-OH stretching).")
+        if any(g in groups for g in ["Carbonyl", "Ester C=O", "Carboxylic Acid"]): 
+            interpretation.append("Carbonyl compounds detected (C=O validation)." if language == "English" else "Senyawa karbonil terdeteksi (validasi C=O).")
+        if "Amide" in groups: 
+            interpretation.append("Protein backbone structure / aliphatic amide detected." if language == "English" else "Struktur tulang punggung protein / amida alifatik terdeteksi.")
+        if "Aromatic" in groups: 
+            interpretation.append("Aromatic core ring system compound present." if language == "English" else "Terdapat senyawa sistem cincin inti aromatik.")
         
         if interpretation:
             for item in interpretation:
                 st.write("✔", item)
         else:
-            st.write("No major diagnostic chemical fingerprints interpreted.")
+            st.write("No major diagnostic chemical fingerprints interpreted." if language == "English" else "Tidak ada sidik jari kimia diagnostik utama yang dapat diinterpretasikan.")
 
     with mat_col:
-        st.subheader("🚀 Smart Material Prediction Matrix")
+        st.subheader("🚀 Smart Material Prediction Matrix" if language == "English" else "🚀 Matriks Prediksi Material Cerdas")
         peakset = set([round(x) for x in peaks])
         
         # Algoritma Pencocokan Material Berdasarkan Cluster Penanda Utama
         predicted = False
         if any(p in peakset for p in range(3350, 3450)) and any(p in peakset for p in range(2900, 2950)) and any(p in peakset for p in range(1000, 1100)):
-            st.success("High Confidence Match: **Cellulose Matrix**")
+            st.success("High Confidence Match: **Cellulose Matrix**" if language == "English" else "Kesesuaian Akurasi Tinggi: **Matriks Selulosa**")
             predicted = True
         if any(p in peakset for p in range(1720, 1740)) and any(p in peakset for p in range(2900, 2950)):
-            st.success("High Confidence Match: **PLA Film (Polylactic Acid)**")
+            st.success("High Confidence Match: **PLA Film (Polylactic Acid)**" if language == "English" else "Kesesuaian Akurasi Tinggi: **Film PLA (Asam Polilaktat)**")
             predicted = True
         if any(p in peakset for p in range(3350, 3450)) and any(p in peakset for p in range(1620, 1640)):
-            st.success("High Confidence Match: **Protein-Based Bio-nanocomposite Film**")
+            st.success("High Confidence Match: **Protein-Based Bio-nanocomposite Film**" if language == "English" else "Kesesuaian Akurasi Tinggi: **Film Bio-nanokomposit Berbasis Protein**")
             predicted = True
         if any(p in peakset for p in range(3350, 3450)) and any(p in peakset for p in range(1640, 1660)) and any(p in peakset for p in range(1540, 1560)):
-            st.success("High Confidence Match: **Chitosan Biocompatible Matrix**")
+            st.success("High Confidence Match: **Chitosan Biocompatible Matrix**" if language == "English" else "Kesesuaian Akurasi Tinggi: **Matriks Biokompatibel Kitosan**")
             predicted = True
             
         if not predicted:
-            st.info("Pattern matrix did not confidently match known specific materials (Cellulose, PLA, Chitosan, etc.).")
+            st.info("Pattern matrix did not confidently match known specific materials (Cellulose, PLA, Chitosan, etc.)." if language == "English" else "Pola matriks tidak cocok secara signifikan dengan material spesifik yang diketahui (Selulosa, PLA, Kitosan, dll).")
 
     # Spectrum Digital Mapping Graph
     st.divider()
-    st.subheader("📈 Interactive Functional Grid Mapping Layout")
+    st.subheader("📈 Interactive Functional Grid Mapping Layout" if language == "English" else "📈 Tata Letak Pemetaan Kisi Fungsional Interaktif")
     
     fig_ftir = go.Figure()
     fig_ftir.add_vrect(x0=2500, x1=4000, fillcolor="rgba(46, 204, 113, 0.1)", line_width=0, annotation_text="Single Bond Region (-OH, -CH, -NH)", annotation_position="top left")
@@ -449,14 +544,15 @@ else:
     fig_ftir.add_vrect(x0=500,  x1=1500, fillcolor="rgba(230, 126, 34, 0.1)", line_width=0, annotation_text="Fingerprint Region", annotation_position="top left")
 
     # Plot Current Input Peaks Line
+    txt_lbl = "Your Detected Peaks" if language == "English" else "Puncak Terdeteksi Anda"
     fig_ftir.add_trace(go.Scatter(
         x=peaks, y=[1] * len(peaks), mode="markers+text",
         text=[f"{p} cm⁻¹" for p in peaks], textposition="top center",
-        marker=dict(size=12, color="crimson", symbol="diamond"), name="Your Detected Peaks"
+        marker=dict(size=12, color="crimson", symbol="diamond"), name=txt_lbl
     ))
 
     fig_ftir.update_layout(
-        xaxis=dict(title="Wavenumber (cm⁻¹)", range=[4000, 500]), # Spektrum FTIR diplot terbalik (standar kimia)
+        xaxis=dict(title="Wavenumber (cm⁻¹)" if language == "English" else "Bilangan Gelombang (cm⁻¹)", range=[4000, 500]), # Spektrum FTIR diplot terbalik
         yaxis=dict(showticklabels=False, range=[0, 2]),
         height=300, margin=dict(t=30, b=30, l=20, r=20), showlegend=False
     )
@@ -467,30 +563,77 @@ else:
     lib_col_ftir, db_col_ftir = st.columns(2)
 
     with lib_col_ftir:
-        st.subheader("📚 FTIR Theory Quick Guide")
-        topic_ftir = st.selectbox("Select Target Library Topic", ["Carbonyl", "O-H", "N-H", "Amide", "Aromatic", "Fingerprint Region"])
+        st.subheader("📚 FTIR Theory Quick Guide" if language == "English" else "📚 Panduan Cepat Teori FTIR")
+        topic_lbl_ftir = "Select Target Library Topic" if language == "English" else "Pilih Topik Target Pustaka"
+        topic_ftir = st.selectbox(topic_lbl_ftir, ["Carbonyl", "O-H", "N-H", "Amide", "Aromatic", "Fingerprint Region"])
         if topic_ftir == "Carbonyl":
-            st.info("Sharp band intense antara **1750–1700 cm⁻¹**. Karakteristik gugus ester, keton, aldehid, maupun asam karboksilat pada material polimer seperti **PLA**.")
+            if language == "English":
+                st.info("Intense sharp band between **1750–1700 cm⁻¹**. Characteristics of ester, ketone, aldehyde, or carboxylic acid groups in polymer materials such as **PLA**.")
+            else:
+                st.info("Puncak tajam intens antara **1750–1700 cm⁻¹**. Karakteristik gugus ester, keton, aldehid, maupun asam karboksilat pada material polimer seperti **PLA**.")
         elif topic_ftir == "O-H":
-            st.info("Pita lebar (broad band) sangat kuat di rentang **3550–3200 cm⁻¹** akibat ikatan hidrogen inter-molekul. Sangat intens pada **selulosa, pati, dan matriks polisakarida**.")
+            if language == "English":
+                st.info("Very strong broad band in the range of **3550–3200 cm⁻¹** due to inter-molecular hydrogen bonding. Highly intense in **cellulose, starch, and polysaccharide matrices**.")
+            else:
+                st.info("Pita lebar (broad band) sangat kuat di rentang **3550–3200 cm⁻¹** akibat ikatan hidrogen inter-molekul. Sangat intens pada **selulosa, pati, dan matriks polisakarida**.")
         elif topic_ftir == "N-H":
-            st.info("Stretching amin primer/sekunder di daerah **3550–3250 cm⁻¹**. Esensial mendeteksi fungsionalisasi gugus nitrogen pada modifikasi kimia **kitosan**.")
+            if language == "English":
+                st.info("Primary/secondary amine stretching in the **3550–3250 cm⁻¹** region. Essential for detecting nitrogen group functionalization in chemical modifications of **chitosan**.")
+            else:
+                st.info("Peregangan amin primer/sekunder di daerah **3550–3250 cm⁻¹**. Esensial mendeteksi fungsionalisasi gugus nitrogen pada modifikasi kimia **kitosan**.")
         elif topic_ftir == "Amide":
-            st.info("Menunjukkan puncak tajam Amida I (~1650 cm⁻¹) dan Amida II (~1550 cm⁻¹). Digunakan secara luas untuk memetakan gugus fungsional protein nanostruktur.")
+            if language == "English":
+                st.info("Displays sharp peaks of Amide I (~1650 cm⁻¹) and Amide II (~1550 cm⁻¹). Widely used to map functional groups in nanostructured proteins.")
+            else:
+                st.info("Menunjukkan puncak tajam Amida I (~1650 cm⁻¹) dan Amida II (~1550 cm⁻¹). Digunakan secara luas untuk memetakan gugus fungsional protein nanostruktur.")
         elif topic_ftir == "Aromatic":
-            st.info("Peregangan cincin karbon C=C aromatik yang tajam di daerah **1615–1495 cm⁻¹**, mendeteksi senyawa fenolik atau ligan penudung nanopartikel.")
+            if language == "English":
+                st.info("Sharp C=C aromatic ring stretching in the **1615–1495 cm⁻¹** region, detecting phenolic compounds or nanoparticle capping ligands.")
+            else:
+                st.info("Peregangan cincin karbon C=C aromatik yang tajam di daerah **1615–1495 cm⁻¹**, mendeteksi senyawa fenolik atau ligan penudung nanopartikel.")
         elif topic_ftir == "Fingerprint Region":
-            st.info("Daerah khas di bawah **1500–500 cm⁻¹** yang merefleksikan getaran deformasi tekukan (bending) molekul secara spesifik untuk tiap jenis isomer struktur kimia.")
+            if language == "English":
+                st.info("Characteristic area below **1500–500 cm⁻¹** reflecting specific molecular bending deformation vibrations unique to each chemical isomer structural type.")
+            else:
+                st.info("Daerah khas di bawah **1500–500 cm⁻¹** yang merefleksikan getaran deformasi tekukan (bending) molekul secara spesifik untuk tiap jenis isomer struktur kimia.")
 
     with db_col_ftir:
-        st.subheader("📋 Core Standard Reference Database")
-        with st.expander("📖 View Complete Infrared Standard Correlation Table"):
-            df_full_ftir = pd.DataFrame(ftir_db, columns=["Vibration Type", "Min Wavenumber", "Max Wavenumber", "Chemical Group/Class"])
+        st.subheader("📋 Core Standard Reference Database" if language == "English" else "📋 Basis Data Referensi Standar Utama")
+        exp_title = "📖 View Complete Infrared Standard Correlation Table" if language == "English" else "📖 Lihat Tabel Korelasi Standar Inframerah Lengkap"
+        with st.expander(exp_title):
+            if language == "English":
+                df_full_ftir = pd.DataFrame(ftir_db, columns=["Vibration Type", "Min Wavenumber", "Max Wavenumber", "Chemical Group/Class"])
+            else:
+                df_full_ftir = pd.DataFrame(ftir_db, columns=["Jenis Getaran", "Wavenumber Minimum", "Wavenumber Maksimum", "Gugus/Kelas Kimia"])
             st.dataframe(df_full_ftir, use_container_width=True, hide_index=True)
 
 # ==========================================
-# 4. GLOBAL FOOTER SYSTEM
+# 4. GLOBAL FOOTER SYSTEM (CLOSING INTERACTIVITY)
 # ==========================================
 st.divider()
-st.markdown("<p style='text-align: center; color: #94a3b8;'>© 2024 - 2026 Lab Food Nanotechnology - Nanomaterial Property Database & Spectroscopy Integrated Hub System</p>", unsafe_allow_html=True)
+
+# Sistem Penutup Halaman Interaktif / Web Closing Section
+close_col1, close_col2 = st.columns([3, 1])
+with close_col1:
+    if language == "English":
+        st.markdown("### 🏁 Session Completed")
+        st.markdown(
+            "Thank you for using **NexusNano Hub**. All calculations, multi-instrument spectrum adjustments, "
+            "and active filters have been cached into the temporary laboratory session engine. Ready for safe deployment."
+        )
+    else:
+        st.markdown("### 🏁 Sesi Selesai")
+        st.markdown(
+            "Terima kasih telah menggunakan **NexusNano Hub**. Seluruh kalkulasi, pencocokan spektrum multi-instrumen, "
+            "dan filter aktif telah disimpan ke dalam sistem penyimpanan laboratorium sementara. Siap digunakan dengan aman."
+        )
+
+with close_col2:
+    # Tombol Penutup Interaktif Konfirmasi
+    if language == "English":
+        st.button("Save & Exit Session", use_container_width=True, type="primary")
+    else:
+        st.button("Simpan & Akhiri Sesi", use_container_width=True, type="primary")
+
+st.markdown("<p style='text-align: center; color: #94a3b8; margin-top: 30px;'>© 2024 - 2026 Lab Food Nanotechnology - Nanomaterial Property Database & Spectroscopy Integrated Hub System</p>", unsafe_allow_html=True)
 
