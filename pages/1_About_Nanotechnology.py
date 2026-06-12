@@ -303,11 +303,10 @@ st.markdown('<h1 class="section-title">What is Food Nanotechnology?</h1>', unsaf
 left, right = st.columns([1, 1], gap="large")
 
 with left:
-    # PERBAIKAN: Menggunakan tautan gambar langsung (direct link) yang valid dari Wikimedia
     st.image(
-        "https://upload.wikimedia.org/wikipedia/commons/b/b8/A_high-resolution_translation_of_nanotechnology_concept.jpg",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS58r2f65MzujgF-cHQFcWrRP2FHJzBfseDqrvzoy8-985OY-urOcBZMvs&s=10",
         use_container_width=True,
-        caption="Nanotechnology Engineering & Research Laboratory"
+        caption="Illustration of Nanotechnology (klik gambar untuk memperbesar)"
     )
 
 with right:
@@ -443,90 +442,87 @@ selected = st.selectbox(
     ["Silver", "Curcumin", "Vitamin D", "β-Carotene", "Essential Oil"]
 )
 
-# 1. CURCUMIN
-if selected == "Curcumin":
-    show_structure = st.checkbox("👁️ Tampilkan Diagram Struktur Kimia Curcumin", value=True)
-    if show_structure:
+# Inisialisasi state agar penutupan gambar berfungsi interaktif
+if "hide_illustration" not in st.session_state:
+    st.session_state.hide_illustration = None
+
+if st.session_state.hide_illustration != selected:
+    # 1. CURCUMIN
+    if selected == "Curcumin":
         sc1, sc2, sc3 = st.columns([1, 2, 1])
         with sc2:
             st.image(
-                "https://upload.wikimedia.org/wikipedia/commons/9/98/Curcumin_structure.svg",
-                use_container_width=True
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZUUpu1DQBL65yAqxxpS_j72ZX4P8WlPVz0R6Rv7v3PwQoCHKulP3xTcmz&s=10",
+                use_container_width=True,
+                caption="Klik untuk memperbesar gambar"
             )
-            if st.button("❌ Tutup Gambar Struktur", key="btn_curcumin"):
-                st.rerun()
+
         st.info("""
         **Nanoencapsulation of Curcumin** meningkatkan dispersibilitas air, stabilitas saluran pencernaan, 
         dan tingkat bioavailabilitas sistemik, menjadikannya sangat ideal untuk komponen pangan fungsional.
         """)
 
-# 2. SILVER (PERAK)
-elif selected == "Silver":
-    show_structure = st.checkbox("👁️ Tampilkan Ilustrasi Mekanisme Nanopartikel Perak", value=True)
-    if show_structure:
+    # 2. SILVER (PERAK)
+    elif selected == "Silver":
         sc1, sc2, sc3 = st.columns([1, 2, 1])
         with sc2:
             st.image(
-                "https://upload.wikimedia.org/wikipedia/commons/e/ee/Silver_crystal.svg",
-                use_container_width=True
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS469BO-o7E-BFR_RDnmD9TNBErfn77M9XmPk9ZUXjtKg&s=10",
+                use_container_width=True,
+                caption="Klik untuk memperbesar gambar"
             )
-            if st.button("❌ Tutup Gambar Struktur", key="btn_silver"):
-                st.rerun()
+
         st.success("""
         **Silver Nanoparticles (AgNPs)** memberikan luas permukaan kontak yang masif untuk berinteraksi dengan dinding sel mikroba. 
         Sistem ini merusak membran sel bakteri dan sangat efektif diaplikasikan pada *active packaging* untuk memperpanjang masa simpan produk makanan.
         """)
 
-# 3. VITAMIN D
-elif selected == "Vitamin D":
-    show_structure = st.checkbox("👁️ Tampilkan Diagram Struktur Kimia Vitamin D3", value=True)
-    if show_structure:
+    # 3. VITAMIN D
+    elif selected == "Vitamin D":
         sc1, sc2, sc3 = st.columns([1, 2, 1])
         with sc2:
             st.image(
-                "https://upload.wikimedia.org/wikipedia/commons/9/9f/Cholecalciferol2.svg",
-                use_container_width=True
+                "https://www.mdpi.com/biomolecules/biomolecules-14-01090/article_deploy/html/images/biomolecules-14-01090-g001.png",
+                use_container_width=True,
+                caption="Schematic representation of vitamin D metabolism and biological functions. Approximately 80% of vitamin D is synthesized in the skin through UVB-induced conversion of 7-dehydrocholesterol (7-DHC) to pre-vitamin D3 and subsequently vitamin D3, while the remaining 20% is obtained from dietary sources as vitamin D2 and vitamin D3. Following absorption and transport by vitamin D-binding protein (DBP), vitamin D undergoes 25-hydroxylation in the liver to form 25-hydroxyvitamin D [25(OH)D] and subsequent 1α-hydroxylation in the kidney to produce the biologically active form, 1,25-dihydroxyvitamin D3 [1,25(OH)₂D₃]. Active vitamin D regulates calcium and phosphate homeostasis and exerts physiological effects on bone health, intestinal mineral absorption, immune modulation, and liver function."
             )
-            if st.button("❌ Tutup Gambar Struktur", key="btn_vitd"):
-                st.rerun()
+
         st.info("""
         **Nanoencapsulation of Vitamin D** memproteksi senyawa hidrofobik ini dari degradasi akibat paparan asam lambung, panas, dan oksigen. 
         Sistem pembawa nano (seperti nanoemulsi) mengaburkan fase minyaknya sehingga Vitamin D dapat larut jernih dalam produk berbasis air seperti susu rendah lemak atau minuman fungsional.
         """)
 
-# 4. β-CAROTENE
-elif selected == "β-Carotene":
-    show_structure = st.checkbox("👁️ Tampilkan Diagram Struktur Kimia β-Carotene", value=True)
-    if show_structure:
+    # 4. β-CAROTENE
+    elif selected == "β-Carotene":
         sc1, sc2, sc3 = st.columns([1, 1.5, 1])
         with sc2:
             st.image(
-                "https://upload.wikimedia.org/wikipedia/commons/7/70/Beta-carotene-2D-skeletal.svg",
-                use_container_width=True
+                "https://www.mdpi.com/antioxidants/antioxidants-10-00426/article_deploy/html/images/antioxidants-10-00426-g004.png",
+                use_container_width=True,
+                caption="Schematic illustration of the gastrointestinal fate, bioaccessibility, absorption pathways, and bioconversion of nanoencapsulated β-carotene. Following release from the food matrix and lipid digestion, β-carotene is incorporated into mixed micelles, transported across the intestinal epithelium through multiple uptake mechanisms, distributed into systemic circulation and target tissues, and subsequently converted into biologically active metabolites."
             )
-            if st.button("❌ Tutup Gambar Struktur", key="btn_beta"):
-                st.rerun()
+
         st.warning("""
         **Beta-Carotene Nanoparticles** memperkecil ukuran droplet kristal menjadi skala nano untuk melewati lapisan batas tidak teraduk (*unstirred water layer*) di usus secara efisien. 
         Rekayasa ini meningkatkan penyerapan seluler (bioavailabilitas) sekaligus melindungi stabilitas warna alaminya dari proses oksidasi.
         """)
 
-# 5. ESSENTIAL OIL (MINYAK ATSIRI)
-elif selected == "Essential Oil":
-    show_structure = st.checkbox("👁️ Tampilkan Ilustrasi Sistem Penghantaran Minyak Atsiri", value=True)
-    if show_structure:
+    # 5. ESSENTIAL OIL (MINYAK ATSIRI)
+    elif selected == "Essential Oil":
         sc1, sc2, sc3 = st.columns([1, 2, 1])
         with sc2:
             st.image(
-                "https://upload.wikimedia.org/wikipedia/commons/a/a4/Micelle_scheme-en.svg",
-                use_container_width=True
+                "https://media.springernature.com/lw1200/springer-static/image/art%3A10.1186%2Fs43014-025-00309-0/MediaObjects/43014_2025_309_Fig4_HTML.png",
+                use_container_width=True,
+                caption="Klik untuk memperbesar gambar"
             )
-            if st.button("❌ Tutup Gambar Struktur", key="btn_eo"):
-                st.rerun()
+
         st.success("""
         **Nanoencapsulated Essential Oil** berhasil mengunci sifat inti minyak atsiri yang sangat volatil (mudah menguap) dan berbau menyengat. 
         Enkapsulasi dalam nanostruktur (seperti lipid padat atau liposom) menjamin *sustained controlled release* (pelepasan antimikroba secara berkala) di dalam kemasan pintar.
         """)
+else:
+    st.caption("Ilustrasi disembunyikan. Ubah pilihan material di atas untuk memuat ulang.")
         
 # =============================================================================
 # SECTION 3: INTERACTIVE NANOSCALE EXPLORER
@@ -622,32 +618,25 @@ field = st.selectbox(
     ["Nanoencapsulation", "Nanoemulsion", "Edible Coating", "Nanosensor", "Active Packaging"]
 )
 
+if "hide_research_img" not in st.session_state:
+    st.session_state.hide_research_img = None
+
 def render_research_area(badge, title, desc, app1, app2, app3, img_url):
-    show_img = st.checkbox(f"📷 Tampilkan Visualisasi Terkait {title}", value=True)
+    # Gambar dan detail kartu riset langsung ditampilkan berdampingan secara permanen
+    r_left, r_right = st.columns([1, 1], gap="medium")
     
-    if show_img:
-        r_left, r_right = st.columns([1, 1], gap="medium")
-        with r_left:
-            st.image(img_url, use_container_width=True)
-            if st.button("❌ Sembunyikan Gambar Visualisasi"):
-                st.rerun()
-        with r_right:
-            st.markdown(f"""
-            <div class="research-card">
-                <div class="research-badge">{badge}</div>
-                <div class="research-title">{title}</div>
-                <div class="research-desc">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
-    else:
+    with r_left:
+        st.image(img_url, use_container_width=True, caption="Klik gambar untuk memperbesar")
+        
+    with r_right:
         st.markdown(f"""
-        <div class="research-card" style="margin-bottom: 20px;">
+        <div class="research-card">
             <div class="research-badge">{badge}</div>
             <div class="research-title">{title}</div>
             <div class="research-desc">{desc}</div>
         </div>
         """, unsafe_allow_html=True)
-    
+        
     st.write("") 
     a1, a2, a3 = st.columns(3)
     with a1: st.markdown(f'<div class="application-card"><div class="application-icon">{app1[0]}</div>{app1[1]}</div>', unsafe_allow_html=True)
@@ -659,35 +648,35 @@ if field == "Nanoencapsulation":
         "Bioactive Delivery Systems", "Nanoencapsulation",
         "Nanoencapsulation melindungi senyawa sensitif seperti vitamin, antioksidan, probiotik, dan fitokimia dari kerusakan lingkungan luar guna meningkatkan aspek bioavailabilitas tubuh.",
         ("💊", "Functional Foods"), ("🧬", "Nutraceuticals"), ("🍊", "Vitamin Delivery"),
-        "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=800"
+        "https://www.frontiersin.org/files/Articles/1746176/xml-images/fnut-12-1746176-g002.webp"
     )
 elif field == "Nanoemulsion":
     render_research_area(
         "Lipid-Based Delivery System", "Nanoemulsion",
         "Sistem koloid droplet minyak-air berskala 20–200 nm untuk mempermudah pelarutan komponen hidrofobik/lipofilik seperti kurkuminoid dan minyak esensial ke produk minuman encer.",
         ("🥛", "Dairy Products"), ("🥤", "Functional Beverages"), ("🍋", "Essential Oils"),
-        "https://images.unsplash.com/photo-1628771065518-0d82f1938462"
+        "https://ueeshop.ly200-cdn.com/u_file/UPAF/UPAF406/2211/file/bac08413e4.png"
     )
 elif field == "Edible Coating":
     render_research_area(
         "Sustainable Preservation Technology", "Edible Coating",
         "Lapisan pelindung biodegradable tipis berbasis hidrokoloid yang diperkuat serat nanofiller (seperti nanocellulose) untuk menahan laju migrasi gas oksigen dan air pada komoditas segar.",
         ("🍓", "Strawberry Protection"), ("🍎", "Apple Preservation"), ("🥭", "Mango Shelf-Life"),
-        "https://images.unsplash.com/photo-1464965911861-746a04b4bca6"
+        "https://ars.els-cdn.com/content/image/1-s2.0-S0001868621000464-gr5.jpg"
     )
 elif field == "Nanosensor":
     render_research_area(
         "Intelligent Monitoring System", "Nanosensor",
         "Perangkat analitik nano guna mengidentifikasi perubahan volatilitas gas amonia, kelembaban, atau perkembangan koloni bakteri patogen pada produk segar pangan secara real-time.",
         ("📡", "Spoilage Detection"), ("🌡️", "Temperature Monitoring"), ("🦠", "Pathogen Detection"),
-        "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789"
+        "https://www.researchgate.net/publication/321848011/figure/fig2/AS:572056775258112@1513400371377/Schematic-diagrams-of-nanosensors-a-Sensor-surfaces-can-be-chemically-tailored-to.png"
     )
 elif field == "Active Packaging":
     render_research_area(
         "Smart Food Packaging Technology", "Active Packaging",
         "Kemasan aktif yang melepaskan senyawa fungsional antimikroba secara terkendali ke ruang kosong kemasan guna menekan aktivitas pembusukan mikroba eksternal.",
         ("📦", "Shelf-Life Extension"), ("🦠", "Antimicrobial Packaging"), ("🌿", "Essential Oil Packaging"),
-        "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da"
+        "https://www.researchgate.net/publication/357728826/figure/fig2/AS:1111273395757058@1641959632474/Schematic-representation-of-active-packaging.png"
     )
 
 # =============================================================================
@@ -701,7 +690,7 @@ tabs = st.tabs(["🥛 Milk", "🍓 Fruit", "🥩 Meat", "🥤 Beverage"])
 with tabs[0]:
     t_left, t_right = st.columns(2, gap="medium")
     with t_left:
-        st.image("https://images.unsplash.com/photo-1550583724-b2692b85b150", use_container_width=True)
+        st.image("https://images.unsplash.com/photo-1550583724-b2692b85b150", use_container_width=True, caption="Klik untuk memperbesar")
     with t_right:
         st.markdown("""
         <div class="product-card">
@@ -717,7 +706,7 @@ with tabs[0]:
 with tabs[1]:
     t_left, t_right = st.columns(2, gap="medium")
     with t_left:
-        st.image("https://images.unsplash.com/photo-1464965911861-746a04b4bca6", use_container_width=True)
+        st.image("https://images.unsplash.com/photo-1464965911861-746a04b4bca6", use_container_width=True, caption="Klik untuk memperbesar")
     with t_right:
         st.markdown("""
         <div class="product-card">
@@ -739,7 +728,7 @@ with tabs[1]:
 with tabs[2]:
     t_left, t_right = st.columns(2, gap="medium")
     with t_left:
-        st.image("https://images.unsplash.com/photo-1607623814075-e51df1bdc82f", use_container_width=True)
+        st.image("https://images.unsplash.com/photo-1607623814075-e51df1bdc82f", use_container_width=True, caption="Klik untuk memperbesar")
     with t_right:
         st.markdown("""
         <div class="product-card">
@@ -761,7 +750,7 @@ with tabs[2]:
 with tabs[3]:
     t_left, t_right = st.columns(2, gap="medium")
     with t_left:
-        st.image("https://images.unsplash.com/photo-1547592180-85f173990554", use_container_width=True)
+        st.image("https://images.unsplash.com/photo-1547592180-85f173990554", use_container_width=True, caption="Klik untuk memperbesar")
     with t_right:
         st.markdown("""
         <div class="product-card">
